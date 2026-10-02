@@ -28,9 +28,23 @@ jobs:
         python3.10 -m pip install --upgrade pip setuptools
         python3.10 -m pip install buildozer "cython<3.0.0"
 
+    - name: Pre-accept Android SDK Licenses & Install Build Tools
+      run: |
+        # تشغيل buildozer مبدئياً لتجهيز مجلد الـ SDK
+        yes | python3.10 -m buildozer android p4a -- help || true
+        
+        # قبول كافة التراخيص مسبقاً وتثبيت build-tools المطلوبة
+        mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+        echo -e "\n8933373015b37f209175a0fcff30d73280518003\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+        
+        if [ -f ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager ]; then
+          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2" "platforms;android-33" || true
+        fi
+
     - name: Build APK with Buildozer
       run: |
-        APP_ANDROID_ACCEPT_SDK_LICENSES=1 python3.10 -m buildozer -v android debug
+        APP_ANDROID_ACCEPT_SDK_LICENSES=1 yes | python3.10 -m buildozer -v android debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
