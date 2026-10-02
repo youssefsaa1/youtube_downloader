@@ -33,9 +33,11 @@ android.minapi = 21
 # (str) Android NDK version
 android.ndk = 25b
 
+# (str) Android build-tools version
+android.build_tools_version = 33.0.2
+
 # (list) The Android architectures to build for
 android.archs = arm64-v8a
-
 # (bool) Fullscreen mode
 fullscreen = 0
 
